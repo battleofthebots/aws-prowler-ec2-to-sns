@@ -1,0 +1,12 @@
+[Unit]
+Description=Run prowler once a day on weekdays in a tmux session
+
+[Service]
+Type=forking
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/prowler-environment
+ExecStart=/usr/bin/tmux new -s "prowler" -d "source .venv/bin/activate; prowler aws -F daily_prowler -q --verbose; sleep 5; python3 prowler_publish.py; sleep 30"
+
+[Install]
+Wants=network-online.target

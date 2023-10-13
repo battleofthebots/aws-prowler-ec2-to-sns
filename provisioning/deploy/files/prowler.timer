@@ -1,0 +1,9 @@
+[Unit]
+Description=Run prowler once a day on weekdays
+
+[Timer]
+OnCalendar=Mon..Fri 12:00
+Persistent=false
+
+[Install]
+WantedBy=timers.target

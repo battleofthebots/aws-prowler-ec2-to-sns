@@ -1,0 +1,49 @@
+---
+- name: Create prowler-environment directory
+  ansible.builtin.file:
+    path: /home/ubuntu/prowler-environment
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+
+- name: Copy over prowler scripts
+  become: true
+  become_user: ubuntu
+  ansible.builtin.copy:
+    remote_src: no
+    src: "{{ item }}"
+    dest: /home/ubuntu/prowler-environment/
+  loop:
+    - prowler_publish.py
+    - setup_prowler.sh
+  tags:
+    - deployment
+  
+- name: Copy over systemd files
+  ansible.builtin.copy:
+    remote_src: no
+    src: "{{ item }}"
+    dest: /etc/systemd/system/
+  loop:
+    - prowler.service
+    - prowler.timer
+  tags:
+    - deployment
+
+- name: Run prowler setup
+  become: true
+  become_user: ubuntu
+  shell:
+    chdir: /home/ubuntu/prowler-environment/
+    cmd: bash setup_prowler.sh
+  tags:
+    - setup
+    - packages
+
+- name: Start prowler systemd timer
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: prowler.timer
+    state: started  
+  tags:
+    - deploy

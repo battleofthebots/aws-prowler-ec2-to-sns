@@ -1,0 +1,15 @@
+---
+- name: Update APT Packages
+  ansible.builtin.apt:
+    update_cache: true
+  tags:
+    - setup
+    - update
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name: " {{ item }} "
+  loop:
+    - python3.9-venv
+  tags:
+    - setup
